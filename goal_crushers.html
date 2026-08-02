@@ -235,9 +235,13 @@ function save() {
 function calcPoints(week) {
   let total = 0;
   const breakdown = {};
+  // Only count tiers that have tasks
+  const activeTiers = TIERS.filter(tier => (week.tasks[tier.key]||[]).length > 0);
+  const activeShare = activeTiers.reduce((sum, t) => sum + t.share, 0) || 1;
+
   TIERS.forEach(tier => {
     const tasks = week.tasks[tier.key] || [];
-    const tierTotal = tier.share * 10;
+    const tierTotal = tasks.length > 0 ? (tier.share / activeShare) * 10 : 0;
     const perTask = tasks.length > 0 ? tierTotal / tasks.length : 0;
     let earned = 0;
     tasks.forEach(t => {
